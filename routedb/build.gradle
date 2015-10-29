@@ -1,0 +1,21 @@
+plugins {
+    id "org.golang.mobile.bind" version "0.2.2"
+}
+
+gobind {
+    pkg = "github.com/jeffallen/routedb"
+
+    // -javapkg flag puts the generated java class into the specified package.
+    GOMOBILEFLAGS="-javapkg=org.nella.mm"
+
+    /* Set the following variable(s):
+
+       GOPATH: where the Go package is; check `go env`. This is required.
+		ex) GOPATH="/my/go/path".
+
+       GO:     if the Go binary is not in the usual place, specify
+               the absolute path to the go binary.
+     */
+    GOPATH="/Users/jra"
+    GO="/Users/jra/go/bin/go"
+}

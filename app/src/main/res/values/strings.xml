@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">MarshrutMe</string>
+    <string name="title_activity_main">MarshrutMe</string>
+    <string name="your_nearest">Your nearest line:</string>
+    <string name="action_settings">Settings</string>
+    <string name="gps_settings">GPS Settings</string>
+    <string name="gps_settings_must">You must turn on GPS to use this app.</string>
+    <string name="ok">Ok</string>
+    <string name="cancel">Cancel</string>
+</resources>
