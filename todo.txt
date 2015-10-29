@@ -1,0 +1,10 @@
+Next steps:
+	Settings box
+		choose mock GPS provider (hidden option?)
+		choose city
+	Show routes on the map
+	Click on nearest stop, find out route number(s)
+	Download routedb from server
+		check that version is current
+	Record routes
+
