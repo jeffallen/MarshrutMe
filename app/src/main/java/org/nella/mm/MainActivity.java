@@ -90,22 +90,6 @@ public class MainActivity extends AppCompatActivity implements IMyLocationConsum
                 mapView.getController().animateTo(myLocationOverlay.getMyLocation());
             }
         });
-
-//        TextView nearest = (TextView) findViewById(R.id.nearest);
-//        nearest.setText("yo");
-
-        // check if GPS enabled
-//        GPSTracker gpsTracker = new GPSTracker(this);
-
-//        if (gpsTracker.getIsGPSTrackingEnabled())
-//        {
-//            String stringLatitude = String.valueOf(gpsTracker.latitude);
-//            String stringLongitude = String.valueOf(gpsTracker.longitude);
-//             stringLatitude+","+stringLongitude);
-//        } else {
-//            showSettingsAlert();
-//        }
-
     }
 
     public void onLocationChanged(Location location, IMyLocationProvider provider) {
