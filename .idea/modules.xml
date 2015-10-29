@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/MarshrutMe.iml" filepath="$PROJECT_DIR$/MarshrutMe.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/routedb/routedb.iml" filepath="$PROJECT_DIR$/routedb/routedb.iml" />
       <module fileurl="file://$PROJECT_DIR$/ivy/routedb.iml" filepath="$PROJECT_DIR$/ivy/routedb.iml" />
     </modules>
   </component>
