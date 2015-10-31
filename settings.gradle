@@ -1,1 +1,1 @@
-include ':app', ':routedb'
+include ':app', ':routedb', ':OSMBonusPack'

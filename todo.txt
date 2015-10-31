@@ -8,3 +8,7 @@ Next steps:
 		check that version is current
 	Record routes
 
+Bugs:
+
+Bugs fixed:
+	Zoom to bounds on start wrong

@@ -1,12 +1,11 @@
-apply plugin: 'com.android.application'
+apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 22
     buildToolsVersion "22.0.1"
 
     defaultConfig {
-        applicationId "org.nella.mm.marshrutme"
-        minSdkVersion 15
+        minSdkVersion 10
         targetSdkVersion 22
         versionCode 1
         versionName "1.0"
@@ -20,10 +19,11 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:22.2.1'
-    compile 'com.android.support:support-v4:22.2.1'
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+
+    compile "com.android.support:support-v4:22.2.0"
     compile 'org.osmdroid:osmdroid-android:4.3'
-    compile 'org.slf4j:slf4j-android:1.7.12'
-    compile project(':routedb')
-    compile project(':OSMBonusPack')
+    compile 'org.slf4j:slf4j-android:1.6.1-RC1'
+    compile 'org.apache.commons:commons-lang3:3.3.2'
+    compile 'com.google.code.gson:gson:2.3'
 }

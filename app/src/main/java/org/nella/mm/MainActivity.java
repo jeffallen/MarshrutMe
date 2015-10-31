@@ -13,17 +13,23 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import org.osmdroid.DefaultResourceProxyImpl;
 import org.osmdroid.ResourceProxy;
-import org.osmdroid.util.BoundingBoxE6;
 import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.IMyLocationConsumer;
 import org.osmdroid.views.overlay.mylocation.IMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
+import org.osmdroid.bonuspack.overlays.Polyline;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements IMyLocationConsumer {
     public static final String tag = "mm.MainActivity";
@@ -34,14 +40,16 @@ public class MainActivity extends AppCompatActivity implements IMyLocationConsum
 
     SingleItemOverlay nearestOverlay = null;
     Drawable nearestMark;
+    MapView mapView = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final MyMapView mapView = (MyMapView) findViewById(R.id.mapview);
+        mapView = (MapView) findViewById(R.id.mapview);
         mapView.setBuiltInZoomControls(true);
+        mapView.setMultiTouchControls(true);
 
         // Prepare the nearest mark overlay. See onLocationChanged for when it
         // is set.
@@ -71,15 +79,29 @@ public class MainActivity extends AppCompatActivity implements IMyLocationConsum
 
         try {
             rdb = Routedb.Load(buffer.toByteArray());
+
+            // Set initial center and zoom using the bounds of the database.
             Routedb.Box b = rdb.Bounds();
-            mapView.boundingBox = new BoundingBoxE6(b.getN(), b.getE(), b.getS(), b.getW());
+            double latspan = (b.getN() - b.getS());
+            double lonspan = (b.getE() - b.getW());
+            GeoPoint gp = new GeoPoint(
+                    b.getS() + latspan/2,
+                    b.getW() + lonspan / 2);
+            Log.d(tag, "setCenter " + gp);
+            mapView.getController().setCenter(gp);
+            // Level 13 is hardcoded here because zoomToSpan didn't work, and 13 covers
+            // the kind of zone mass transit users are generally looking for.
+            mapView.getController().setZoom(13);
         } catch (Exception e) {
             Log.e(tag, "could not load routedb: " + e);
+            rdb = null;
         }
 
+        addRouteOverlays();
+
         IMyLocationProvider lp;
-        lp = new MockLocationProvider();
-        // lp = new GpsMyLocationProvider(this);
+        //lp = new MockLocationProvider();
+        lp = new GpsMyLocationProvider(this);
         SnoopingLocationProvider slp = new SnoopingLocationProvider(lp, this);
 
         myLocationOverlay = new MyLocationNewOverlay(this, slp, mapView);
@@ -92,10 +114,65 @@ public class MainActivity extends AppCompatActivity implements IMyLocationConsum
         });
     }
 
+    final protected static char[] hexArray = "0123456789ABCDEF".toCharArray();
+    private static String bytesToHex(byte[] bytes) {
+        char[] hexChars = new char[bytes.length * 2];
+        for ( int j = 0; j < bytes.length; j++ ) {
+            int v = bytes[j] & 0xFF;
+            hexChars[j * 2] = hexArray[v >>> 4];
+            hexChars[j * 2 + 1] = hexArray[v & 0x0F];
+        }
+        return new String(hexChars);
+    }
+
+    // dark purple
+    private static final int track_color = 0xFF800080;
+
+    private void addRouteOverlays() {
+        if (rdb == null) {
+            return;
+        }
+        long n = rdb.Routes();
+        for (long i = 0; i < n; i++) {
+            try {
+                Routedb.Route route = rdb.Route(i);
+
+                byte[] by = rdb.Points(i);
+                int pairs = by.length / 8 / 2;
+                Log.d(tag, "polyline for " + route.getName() + " pairs " + pairs);
+
+                ByteBuffer bb = ByteBuffer.wrap(by);
+                bb.order(ByteOrder.LITTLE_ENDIAN);
+                ArrayList<GeoPoint> list = new ArrayList<GeoPoint>(pairs);
+
+                for (int j = 0; j < pairs; j ++) {
+                    GeoPoint g = new GeoPoint((int)bb.getLong(), (int)bb.getLong());
+                    list.add(g);
+                }
+
+                Polyline pl = new Polyline(this);
+                pl.setColor(track_color);
+                pl.setPoints(list);
+                // Add the paths at the front of the overlay list so that they
+                // are lower in the z-order.
+                mapView.getOverlays().add(0, pl);
+           } catch (Exception e) {
+                Log.d(tag, "point decode: " + e + e.getStackTrace());
+                break;
+            }
+
+        }
+
+    }
+
     public void onLocationChanged(Location location, IMyLocationProvider provider) {
-        Log.d(tag, "New location: " + location);
+        if (rdb == null) {
+            return;
+        }
+
         try {
             Routedb.Stop s = rdb.Nearest(location.getLatitude(), location.getLongitude());
+            Log.d(tag, "New nearest: " + s);
             GeoPoint pt = new GeoPoint(s.getLat(), s.getLon());
             nearestOverlay.setItem(pt, "nearest", "nearest");
         } catch (Exception e) {

@@ -19,7 +19,6 @@ public class SnoopingLocationProvider implements IMyLocationProvider, IMyLocatio
 
     @Override
     public boolean startLocationProvider(IMyLocationConsumer myLocationConsumer) {
-        Log.d("snoop", "startLocationProvider");
         lc = myLocationConsumer;
         return lp.startLocationProvider(this);
     }
