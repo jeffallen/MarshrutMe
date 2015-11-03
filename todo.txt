@@ -1,14 +1,24 @@
 Next steps:
-	Settings box
+	Settings menu
 		choose mock GPS provider (hidden option?)
 		choose city
-	Show routes on the map
-	Click on nearest stop, find out route number(s)
+		about box with licenses
+	Server
+		accept POST of tracks, anonymize/reduce and store
+		simplify track
+		trip detection in a track, trim non-trip
 	Download routedb from server
 		check that version is current
 	Record routes
+	Change Go to Java to flatbuffers
+		https://rwinslow.com/posts/use-flatbuffers-in-golang/
 
 Bugs:
+	Make info bubbles smaller (how?)
 
 Bugs fixed:
 	Zoom to bounds on start wrong
+
+Tasks done:
+	Show routes on the map
+	Click on map, find out route number(s) under tap

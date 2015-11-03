@@ -13,10 +13,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
 import org.osmdroid.DefaultResourceProxyImpl;
 import org.osmdroid.ResourceProxy;
+import org.osmdroid.bonuspack.overlays.BasicInfoWindow;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
@@ -28,7 +28,6 @@ import org.osmdroid.bonuspack.overlays.Polyline;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements IMyLocationConsumer {
@@ -132,27 +131,31 @@ public class MainActivity extends AppCompatActivity implements IMyLocationConsum
         if (rdb == null) {
             return;
         }
+
+        String packageName = mapView.getContext().getPackageName();
+        int resid = mapView.getContext().getResources().getIdentifier("layout/bonuspack_bubble", null, packageName);
+
         long n = rdb.Routes();
         for (long i = 0; i < n; i++) {
             try {
-                Routedb.Route route = rdb.Route(i);
+                byte[] rfb = rdb.Route(i);
+                ByteBuffer bb = ByteBuffer.wrap(rfb);
+                Route route = Route.getRootAsRoute(bb);
 
-                byte[] by = rdb.Points(i);
-                int pairs = by.length / 8 / 2;
-                Log.d(tag, "polyline for " + route.getName() + " pairs " + pairs);
+                ArrayList<GeoPoint> list = new ArrayList<>();
 
-                ByteBuffer bb = ByteBuffer.wrap(by);
-                bb.order(ByteOrder.LITTLE_ENDIAN);
-                ArrayList<GeoPoint> list = new ArrayList<GeoPoint>(pairs);
-
-                for (int j = 0; j < pairs; j ++) {
-                    GeoPoint g = new GeoPoint((int)bb.getLong(), (int)bb.getLong());
-                    list.add(g);
+                org.nella.mm.GeoPoint gp = new org.nella.mm.GeoPoint();
+                for (int j = 0; j < route.pathLength(); j++) {
+                    gp = route.path(gp, j);
+                    list.add(new GeoPoint(gp.lat(), gp.lon()));
                 }
 
                 Polyline pl = new Polyline(this);
                 pl.setColor(track_color);
                 pl.setPoints(list);
+                BasicInfoWindow biw = new BasicInfoWindow(resid, mapView);
+                pl.setInfoWindow(biw);
+                pl.setTitle(route.name());
                 // Add the paths at the front of the overlay list so that they
                 // are lower in the z-order.
                 mapView.getOverlays().add(0, pl);
