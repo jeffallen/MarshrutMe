@@ -10,8 +10,6 @@ Next steps:
 	Download routedb from server
 		check that version is current
 	Record routes
-	Change Go to Java to flatbuffers
-		https://rwinslow.com/posts/use-flatbuffers-in-golang/
 
 Bugs:
 	Make info bubbles smaller (how?)
@@ -22,3 +20,4 @@ Bugs fixed:
 Tasks done:
 	Show routes on the map
 	Click on map, find out route number(s) under tap
+	Change Go to Java to flatbuffers
