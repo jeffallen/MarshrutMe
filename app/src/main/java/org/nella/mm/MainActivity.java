@@ -29,11 +29,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import org.nella.mm.routedb.*;
 
 public class MainActivity extends AppCompatActivity implements IMyLocationConsumer {
     public static final String tag = "mm.MainActivity";
 
-    Routedb.Db rdb = null;
+    Db rdb = null;
 
     MyLocationNewOverlay myLocationOverlay = null;
 
@@ -77,10 +78,10 @@ public class MainActivity extends AppCompatActivity implements IMyLocationConsum
         }
 
         try {
-            rdb = Routedb.Load(buffer.toByteArray());
+            rdb = Routedb.load(buffer.toByteArray());
 
             // Set initial center and zoom using the bounds of the database.
-            Routedb.Box b = rdb.Bounds();
+            Box b = rdb.bounds();
             double latspan = (b.getN() - b.getS());
             double lonspan = (b.getE() - b.getW());
             GeoPoint gp = new GeoPoint(
@@ -135,10 +136,10 @@ public class MainActivity extends AppCompatActivity implements IMyLocationConsum
         String packageName = mapView.getContext().getPackageName();
         int resid = mapView.getContext().getResources().getIdentifier("layout/bonuspack_bubble", null, packageName);
 
-        long n = rdb.Routes();
+        long n = rdb.routes();
         for (long i = 0; i < n; i++) {
             try {
-                byte[] rfb = rdb.Route(i);
+                byte[] rfb = rdb.route(i);
                 ByteBuffer bb = ByteBuffer.wrap(rfb);
                 Route route = Route.getRootAsRoute(bb);
 
@@ -174,7 +175,7 @@ public class MainActivity extends AppCompatActivity implements IMyLocationConsum
         }
 
         try {
-            Routedb.Stop s = rdb.Nearest(location.getLatitude(), location.getLongitude());
+            Stop s = rdb.nearest(location.getLatitude(), location.getLongitude());
             Log.d(tag, "New nearest: " + s);
             GeoPoint pt = new GeoPoint(s.getLat(), s.getLon());
             nearestOverlay.setItem(pt, "nearest", "nearest");

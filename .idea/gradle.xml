@@ -14,6 +14,7 @@
             <option value="$PROJECT_DIR$/routedb" />
           </set>
         </option>
+        <option name="resolveModulePerSourceSet" value="false" />
       </GradleProjectSettings>
     </option>
   </component>

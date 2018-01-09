@@ -1,5 +1,5 @@
 plugins {
-    id "org.golang.mobile.bind" version "0.2.2"
+    id "org.golang.mobile.bind" version "0.2.10"
 }
 
 gobind {
@@ -16,6 +16,6 @@ gobind {
        GO:     if the Go binary is not in the usual place, specify
                the absolute path to the go binary.
      */
-    GOPATH="/Users/jra"
-    GO="/Users/jra/go/bin/go"
+    GOPATH="/Users/jallen/go"
+    GO="/Users/jallen/go/bin/go"
 }
